@@ -1,41 +1,40 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Spades Party!</title><style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#ff006e,#8338ec,#3a86ff,#06d6a0,#ffbe0b);background-size:400% 400%;animation:bg 18s ease infinite;overflow-x:hidden}
-@keyframes bg{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px)}
-h1{margin:0;font-size:1.5em;background:linear-gradient(90deg,#ffbe0b,#ff5ebc,#7df9ff);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900;letter-spacing:1px}
-button{font:inherit;font-weight:800;border:0;border-radius:999px;padding:8px 16px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#ff006e,#fb5607);box-shadow:0 4px 0 #9d0047;transition:transform .1s}button:hover{transform:translateY(-2px) scale(1.05)}button:active{transform:translateY(2px)}
-#wrap{display:grid;grid-template-columns:1fr 240px;gap:12px;padding:12px;max-width:1100px;margin:auto}
+<title>Spades</title><style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Georgia,"Times New Roman",serif;color:#f4f4f4;background:#1f5e2e;overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#174a23;border-bottom:1px solid #0f3518}
+h1{margin:0;font-size:1.4em;font-weight:bold}header div{display:flex;gap:8px}
+button{font:inherit;border:1px solid #888;border-radius:4px;padding:6px 14px;color:#222;cursor:pointer;background:#eee}button:hover{background:#fff}
+#wrap{display:grid;grid-template-columns:1fr 230px;gap:12px;padding:12px;max-width:1150px;margin:auto}
 @media(max-width:760px){#wrap{grid-template-columns:1fr}}
-#table{position:relative;min-height:520px;border-radius:30px;background:radial-gradient(circle,#2ec4b6 0%,#0a7d75 60%,#05524d 100%);border:8px solid;border-image:linear-gradient(45deg,#ffbe0b,#ff006e,#8338ec,#3a86ff) 1;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-.seat{position:absolute;text-align:center;font-weight:800;text-shadow:0 2px 3px #0008}
-.seat .tag{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--c);font-size:.85em}
-.seat.turn .tag{animation:pulse .8s infinite alternate;box-shadow:0 0 14px 4px #fff}
-@keyframes pulse{to{transform:scale(1.12)}}
-#sN{top:8px;left:50%;transform:translateX(-50%)}#sE{right:8px;top:45%}#sW{left:8px;top:45%}#sS{bottom:150px;left:50%;transform:translateX(-50%)}
-.backs{display:flex;justify-content:center;margin-top:4px}.backs i{width:16px;height:26px;margin-left:-6px;border-radius:3px;border:2px solid #fff;background:repeating-linear-gradient(45deg,#ff006e 0 4px,#ffbe0b 4px 8px,#3a86ff 8px 12px)}
-#trick{position:absolute;left:50%;top:42%;width:200px;height:190px;transform:translate(-50%,-50%)}
-#trick .card{position:absolute;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
-@keyframes pop{from{transform:scale(.2) rotate(-40deg);opacity:0}}
-.card{width:58px;height:84px;border-radius:9px;background:linear-gradient(160deg,#fff,#fff3d6);color:#222;font-weight:900;font-size:1.15em;padding:4px;box-shadow:0 3px 8px #0006;position:relative;user-select:none;border:3px solid #fff}
-.card .big{position:absolute;bottom:2px;right:6px;font-size:1.8em}.red{color:#e5004f}.card.s{color:#3b1aa8}.card.c{color:#0a7a3a}.card.d{color:#ff6a00}
-#hand{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;flex-wrap:wrap;padding:0 6px}
-#hand .card{margin-left:-18px;transition:transform .15s;opacity:.55}#hand .card:first-child{margin-left:0}
-#hand .card.legal{opacity:1;cursor:pointer;border-color:#ffbe0b;box-shadow:0 0 12px 3px #ffbe0b}#hand .card.legal:hover{transform:translateY(-16px) rotate(-3deg)}
-#hand.idle .card{opacity:1}
-@media(max-width:600px){.card{width:44px;height:66px;font-size:.95em}#hand .card{margin-left:-14px}#sS{bottom:125px}}
-#panel{background:rgba(0,0,0,.35);border-radius:20px;padding:12px;backdrop-filter:blur(6px)}
-.team{border-radius:14px;padding:10px;margin-bottom:10px}.us{background:linear-gradient(135deg,#ff006e,#ff8fab)}.them{background:linear-gradient(135deg,#3a86ff,#8338ec)}
-.team b{font-size:1.8em;display:block}table{width:100%;font-size:.85em}td{padding:2px}
-#msg{position:absolute;left:50%;top:70%;transform:translateX(-50%);background:linear-gradient(90deg,#ffbe0b,#fb5607);padding:6px 14px;border-radius:999px;font-weight:800;white-space:nowrap;box-shadow:0 3px 10px #0005}
-#overlay{position:fixed;inset:0;background:rgba(20,0,40,.6);display:none;align-items:center;justify-content:center;z-index:9}
-#box{background:linear-gradient(160deg,#8338ec,#ff006e);padding:20px;border-radius:24px;max-width:420px;width:92%;text-align:center;animation:pop .4s;box-shadow:0 0 40px #ff5ebc}
-#bids{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}#bids button{width:46px;padding:8px 0;background:linear-gradient(135deg,#06d6a0,#3a86ff);box-shadow:0 4px 0 #1d4e9e}
-#bids button.nil{width:auto;padding:8px 14px;background:linear-gradient(135deg,#ffbe0b,#fb5607)}
+#table{position:relative;min-height:560px;border-radius:12px;background:#2e7d3c;border:2px solid #174a23;box-shadow:inset 0 0 60px rgba(0,0,0,.25);overflow:hidden}
+.seat{position:absolute;text-align:center;font-size:.9em}
+.seat .tag{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.25)}
+.seat.turn .tag{background:#f4f4f4;color:#174a23;font-weight:bold}
+#sN{top:8px;left:50%;transform:translateX(-50%)}#sE{right:8px;top:42%}#sW{left:8px;top:42%}#sS{bottom:165px;left:50%;transform:translateX(-50%)}
+.backs{display:flex;justify-content:center;margin-top:4px}.backs i{width:18px;height:28px;margin-left:-7px;border-radius:3px;border:2px solid #fff;background:#1d3f8f repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.35) 3px 4px),repeating-linear-gradient(-45deg,transparent 0 3px,rgba(255,255,255,.35) 3px 4px);background-color:#1d3f8f}
+#trick{position:absolute;left:50%;top:42%;width:230px;height:220px;transform:translate(-50%,-50%)}
+#trick .card{position:absolute;animation:slide .25s ease-out}
+@keyframes slide{from{opacity:0;transform:scale(.85)}}
+.card{width:70px;height:100px;border-radius:7px;background:#fff;color:#111;font-weight:bold;font-size:1.3em;padding:4px 6px;box-shadow:0 2px 4px rgba(0,0,0,.4);position:relative;user-select:none;border:1px solid #999;line-height:1.05}
+.card .big{position:absolute;bottom:4px;right:7px;font-size:1.8em}.card.red{color:#c8102e}
+#hand{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;padding:0 6px}
+#hand .card{margin-left:-24px;transition:transform .15s;filter:brightness(.7)}#hand .card:first-child{margin-left:0}
+#hand .card.legal{filter:none;cursor:pointer}#hand .card.legal:hover{transform:translateY(-14px)}
+#hand.idle .card{filter:none}
+@media(max-width:600px){.card{width:52px;height:78px;font-size:1em;padding:3px 4px}#hand .card{margin-left:-28px}#sS{bottom:130px}#trick{width:190px;height:190px}}
+#panel{background:#174a23;border:1px solid #0f3518;border-radius:8px;padding:12px}
+.team{border-radius:6px;padding:8px 10px;margin-bottom:10px;background:rgba(255,255,255,.08)}
+.team b{font-size:1.6em;display:block}table{width:100%;font-size:.85em}td{padding:2px}
+#msg{position:absolute;left:50%;top:72%;transform:translateX(-50%);background:rgba(0,0,0,.35);padding:4px 12px;border-radius:4px;white-space:nowrap}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9}
+#box{background:#f7f7f2;color:#222;padding:20px;border-radius:8px;max-width:420px;width:92%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#bids{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}#bids button{width:46px;padding:8px 0}
+.fx{position:absolute;font-size:2em;pointer-events:none;z-index:5;animation:burst 1.6s ease-out forwards}
+@keyframes burst{0%{transform:translate(0,0) scale(.3);opacity:1}70%{opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1.3) rotate(var(--r));opacity:0}}
 </style></head><body>
-<header><h1>♠ SPADES PARTY ♥</h1><button onclick="newGame()">New Game</button></header>
+<header><h1>♠ Spades</h1><div><button id="mute" onclick="toggleMute()">🔊 Music</button><button onclick="newGame()">New Game</button></div></header>
 <div id="wrap"><div id="table">
-<div class="seat" id="sN" style="--c:#ff006e"></div><div class="seat" id="sW" style="--c:#3a86ff"></div><div class="seat" id="sE" style="--c:#8338ec"></div><div class="seat" id="sS" style="--c:#ff006e"></div>
+<div class="seat" id="sN"></div><div class="seat" id="sW"></div><div class="seat" id="sE"></div><div class="seat" id="sS"></div>
 <div id="trick"></div><div id="msg"></div><div id="hand"></div></div>
 <div id="panel"><div class="team us">You + North<b id="scUs">0</b><span id="bgUs"></span></div><div class="team them">East + West<b id="scThem">0</b><span id="bgThem"></span></div>
 <table id="info"></table><p style="font-size:.8em;opacity:.85">Game to 500. Bags: 10 = −100. Nil ±100. Spades can't be led until broken.</p></div></div>
@@ -89,13 +88,13 @@ if(typeof module!=='undefined')module.exports={deck,shuffle,legalPlays,trickWinn
 <script>
 const NAMES=['You','West','North','East'],SEATID=['sS','sW','sN','sE'],SYM={s:'♠',h:'♥',d:'♦',c:'♣'},RN={11:'J',12:'Q',13:'K',14:'A'};
 let G,dealer=3,busy=false;const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
-function cardEl(c){const e=document.createElement('div');e.className='card '+c.s+(c.s==='h'?' red':'');e.innerHTML=(RN[c.r]||c.r)+'<br>'+SYM[c.s]+'<span class="big">'+SYM[c.s]+'</span>';return e}
+function cardEl(c){const e=document.createElement('div');e.className='card '+c.s+(c.s==='h'||c.s==='d'?' red':'');e.innerHTML=(RN[c.r]||c.r)+'<br>'+SYM[c.s]+'<span class="big">'+SYM[c.s]+'</span>';return e}
 function render(){if(!G)return;for(let p=0;p<4;p++){const e=$(SEATID[p]),b=G.bids[p];e.className='seat'+(G.turn===p?' turn':'');
   e.innerHTML='<span class="tag">'+NAMES[p]+' · bid '+(b===null?'?':b===0?'NIL':b)+' · won '+G.tricks[p]+'</span>'+(p?'<div class="backs">'+'<i></i>'.repeat(G.hands[p].length)+'</div>':'')}
   const h=$('hand');h.innerHTML='';const myTurn=G.turn===0&&G.bids.every(x=>x!==null)&&!busy,leg=myTurn?legalPlays(G.hands[0],G.trick,G.broken):[];
   h.className=myTurn?'':'idle';
   G.hands[0].forEach(c=>{const e=cardEl(c);if(leg.includes(c)){e.classList.add('legal');e.onclick=()=>human(c)}h.appendChild(e)});
-  const t=$('trick');t.innerHTML='';const pos=[[70,100],[0,52],[70,0],[140,52]];
+  const t=$('trick');t.innerHTML='';const sm=innerWidth<=600,pos=sm?[[69,108],[0,56],[69,4],[138,56]]:[[80,118],[0,60],[80,0],[160,60]];
   (G.trick.length?G.trick:(G.showLast||[])).forEach(x=>{const e=cardEl(x.card);e.style.left=pos[x.p][0]+'px';e.style.top=pos[x.p][1]+'px';t.appendChild(e)});
   $('scUs').textContent=G.scores[0];$('scThem').textContent=G.scores[1];$('bgUs').textContent='Bags: '+G.bags[0];$('bgThem').textContent='Bags: '+G.bags[1];
   const tb=(t)=>{const a=G.bids[t],b=G.bids[t+2];return(a??'?')+'+'+(b??'?')};
@@ -107,15 +106,34 @@ async function startRound(sc,bg){dealer=(dealer+1)%4;G=newRoundState(sc,bg,deale
   for(let i=0;i<4;i++){const p=(dealer+1+i)%4;G.turn=p;render();
     if(p===0){busy=false;render();G.bids[0]=await askBid();busy=true}else{await wait(500);G.bids[p]=aiBid(G.hands[p],G.bids[(p+2)%4])}msg(NAMES[p]+' bids '+(G.bids[p]===0?'NIL!':G.bids[p]));render()}
   G.turn=G.leader;busy=false;loop()}
-function askBid(){return new Promise(res=>{let h='<h2>Your bid</h2><p>Partner North bid: '+(G.bids[2]??'not yet')+'</p><div id="bids"><button class="nil" data-b="0">NIL</button>';for(let i=1;i<=13;i++)h+='<button data-b="'+i+'">'+i+'</button>';
+function askBid(){return new Promise(res=>{if(location.hash==='#autobid')return res(aiBid(G.hands[0],G.bids[2]));let h='<h2>Your bid</h2><p>Partner North bid: '+(G.bids[2]??'not yet')+'</p><div id="bids"><button class="nil" data-b="0">NIL</button>';for(let i=1;i<=13;i++)h+='<button data-b="'+i+'">'+i+'</button>';
   overlay(h+'</div>');$('box').querySelectorAll('button').forEach(b=>b.onclick=()=>{overlay('');res(+b.dataset.b)})})}
 async function loop(){while(G.played<13&&G.turn!==0){busy=true;render();await wait(650);const p=G.turn;const w=playCard(G,p,aiPlay(G,p));await after(w)}
   busy=false;render();if(G.played<13)msg('Your turn — pick a glowing card!');else endRound()}
-async function after(w){render();if(w!==null){G.showLast=G.lastTrick;render();msg(NAMES[w]+' '+(w?'wins':'win')+' the trick! 🎉');await wait(1000);G.showLast=null}}
+async function after(w){render();if(w!==null){G.showLast=G.lastTrick;render();if(w%2===0){celebrate();cheer()}msg(NAMES[w]+' '+(w?'wins':'win')+' the trick');await wait(1000);G.showLast=null}}
 async function human(c){if(busy)return;busy=true;const w=playCard(G,0,c);await after(w);busy=false;if(G.played<13)loop();else endRound()}
 function endRound(){render();const r=scoreRound(G),go=gameOver(G.scores);render();
   const row=(n,x)=>'<p><b>'+n+'</b>: bid '+x.bid+', took '+x.tk+' → <b>'+(x.pts>0?'+':'')+x.pts+'</b> '+x.notes.join(', ')+'</p>';
   overlay('<h2>'+(go<0?'Round Summary':go===0?'🏆 You Win! 🏆':'😿 They Win')+'</h2>'+row('You + North',r[0])+row('East + West',r[1])+'<h3>'+G.scores[0]+' – '+G.scores[1]+'</h3>'+(go<0?'<button id="nx">Next Round</button>':'<button onclick="newGame()">New Game</button>'));
   if(go<0)$('nx').onclick=()=>{overlay('');startRound(G.scores,G.bags)}}
+
+// ===== Audio (Web Audio, starts after first click) =====
+let AC=null,master=null,muted=false,musicTimer=null;
+function initAudio(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.5;master.connect(AC.destination);if(AC.state==='running')startMusic()}catch(e){}}
+function tone(f,t,d,v,type){const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)}
+// Bach, Minuet in G (BWV Anh. 114) - note,beats
+const NF=n=>{const m={C:0,D:2,E:4,F:5,G:7,A:9,B:11},sh=n[1]==='#'?1:0;return 440*Math.pow(2,(m[n[0]]+sh+12*(+n.slice(1+sh)+1)-69)/12)};
+const A1='D5 1,G4 .5,A4 .5,B4 .5,C5 .5,D5 1,G4 1,G4 1,E5 1,C5 .5,D5 .5,E5 .5,F#5 .5,G5 1,G4 1,G4 1,C5 1,D5 .5,C5 .5,B4 .5,A4 .5,B4 1,C5 .5,B4 .5,A4 .5,G4 .5,F#4 1,G4 .5,A4 .5,B4 .5,G4 .5,A4 3,';
+const A2='D5 1,G4 .5,A4 .5,B4 .5,C5 .5,D5 1,G4 1,G4 1,E5 1,C5 .5,D5 .5,E5 .5,F#5 .5,G5 1,G4 1,G4 1,C5 1,D5 .5,C5 .5,B4 .5,A4 .5,B4 1,C5 .5,B4 .5,A4 .5,G4 .5,A4 1,B4 .5,A4 .5,G4 .5,F#4 .5,G4 3';
+const MEL=(A1+A2).split(',').map(x=>x.split(' ')),BASS='G3 B3 C4 B3 A3 G3 D3 D3 G3 B3 C4 B3 A3 G3 D3 G2'.split(' ');
+function startMusic(){if(musicTimer)return;const Q=.42,len=48*Q;const play=()=>{let t=AC.currentTime+.1;const t0=t;
+  for(const[n,b]of MEL){tone(NF(n),t,b*Q*.95,.06,'square');t+=b*Q}
+  BASS.forEach((n,i)=>{tone(NF(n),t0+i*3*Q,Q*.9,.12,'triangle');tone(NF(n)*1.5,t0+(i*3+1)*Q,Q*.8,.06,'triangle');tone(NF(n)*2,t0+(i*3+2)*Q,Q*.8,.06,'triangle')})};
+  play();musicTimer=setInterval(play,len*1000)}
+function cheer(){if(!AC)return;const t=AC.currentTime;[523.3,659.3,784,1046.5].forEach((f,i)=>tone(f,t+i*.08,.35,.15,'triangle'))}
+function toggleMute(){muted=!muted;initAudio();AC.resume().then(startMusic);if(master)master.gain.value=muted?0:.5;$('mute').textContent=muted?'🔇 Muted':'🔊 Music'}
+initAudio();['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{initAudio();if(AC)AC.resume().then(startMusic)},{once:true}));
+function celebrate(){const tb=$('table'),E=['🎉','✨','🃏','🔥','👏','🥳','⭐'];for(let i=0;i<22;i++){const e=document.createElement('span');e.className='fx';e.textContent=E[i%E.length];
+  const a=Math.random()*6.283,d=120+Math.random()*180;e.style.left='calc(50% - 16px)';e.style.top='40%';e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d+'px');e.style.setProperty('--r',(Math.random()*120-60)+'deg');e.style.animationDelay=Math.random()*.25+'s';tb.appendChild(e);setTimeout(()=>e.remove(),2000)}}
 newGame();
 </script></body></html>
