@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spades Party!</title><style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#ff006e,#8338ec,#3a86ff,#06d6a0,#ffbe0b);background-size:400% 400%;animation:bg 18s ease infinite;overflow-x:hidden}
+@keyframes bg{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+h1{margin:0;font-size:1.5em;background:linear-gradient(90deg,#ffbe0b,#ff5ebc,#7df9ff);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900;letter-spacing:1px}
+button{font:inherit;font-weight:800;border:0;border-radius:999px;padding:8px 16px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#ff006e,#fb5607);box-shadow:0 4px 0 #9d0047;transition:transform .1s}button:hover{transform:translateY(-2px) scale(1.05)}button:active{transform:translateY(2px)}
+#wrap{display:grid;grid-template-columns:1fr 240px;gap:12px;padding:12px;max-width:1100px;margin:auto}
+@media(max-width:760px){#wrap{grid-template-columns:1fr}}
+#table{position:relative;min-height:520px;border-radius:30px;background:radial-gradient(circle,#2ec4b6 0%,#0a7d75 60%,#05524d 100%);border:8px solid;border-image:linear-gradient(45deg,#ffbe0b,#ff006e,#8338ec,#3a86ff) 1;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.seat{position:absolute;text-align:center;font-weight:800;text-shadow:0 2px 3px #0008}
+.seat .tag{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--c);font-size:.85em}
+.seat.turn .tag{animation:pulse .8s infinite alternate;box-shadow:0 0 14px 4px #fff}
+@keyframes pulse{to{transform:scale(1.12)}}
+#sN{top:8px;left:50%;transform:translateX(-50%)}#sE{right:8px;top:45%}#sW{left:8px;top:45%}#sS{bottom:150px;left:50%;transform:translateX(-50%)}
+.backs{display:flex;justify-content:center;margin-top:4px}.backs i{width:16px;height:26px;margin-left:-6px;border-radius:3px;border:2px solid #fff;background:repeating-linear-gradient(45deg,#ff006e 0 4px,#ffbe0b 4px 8px,#3a86ff 8px 12px)}
+#trick{position:absolute;left:50%;top:42%;width:200px;height:190px;transform:translate(-50%,-50%)}
+#trick .card{position:absolute;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-40deg);opacity:0}}
+.card{width:58px;height:84px;border-radius:9px;background:linear-gradient(160deg,#fff,#fff3d6);color:#222;font-weight:900;font-size:1.15em;padding:4px;box-shadow:0 3px 8px #0006;position:relative;user-select:none;border:3px solid #fff}
+.card .big{position:absolute;bottom:2px;right:6px;font-size:1.8em}.red{color:#e5004f}.card.s{color:#3b1aa8}.card.c{color:#0a7a3a}.card.d{color:#ff6a00}
+#hand{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;flex-wrap:wrap;padding:0 6px}
+#hand .card{margin-left:-18px;transition:transform .15s;opacity:.55}#hand .card:first-child{margin-left:0}
+#hand .card.legal{opacity:1;cursor:pointer;border-color:#ffbe0b;box-shadow:0 0 12px 3px #ffbe0b}#hand .card.legal:hover{transform:translateY(-16px) rotate(-3deg)}
+#hand.idle .card{opacity:1}
+@media(max-width:600px){.card{width:44px;height:66px;font-size:.95em}#hand .card{margin-left:-14px}#sS{bottom:125px}}
+#panel{background:rgba(0,0,0,.35);border-radius:20px;padding:12px;backdrop-filter:blur(6px)}
+.team{border-radius:14px;padding:10px;margin-bottom:10px}.us{background:linear-gradient(135deg,#ff006e,#ff8fab)}.them{background:linear-gradient(135deg,#3a86ff,#8338ec)}
+.team b{font-size:1.8em;display:block}table{width:100%;font-size:.85em}td{padding:2px}
+#msg{position:absolute;left:50%;top:70%;transform:translateX(-50%);background:linear-gradient(90deg,#ffbe0b,#fb5607);padding:6px 14px;border-radius:999px;font-weight:800;white-space:nowrap;box-shadow:0 3px 10px #0005}
+#overlay{position:fixed;inset:0;background:rgba(20,0,40,.6);display:none;align-items:center;justify-content:center;z-index:9}
+#box{background:linear-gradient(160deg,#8338ec,#ff006e);padding:20px;border-radius:24px;max-width:420px;width:92%;text-align:center;animation:pop .4s;box-shadow:0 0 40px #ff5ebc}
+#bids{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}#bids button{width:46px;padding:8px 0;background:linear-gradient(135deg,#06d6a0,#3a86ff);box-shadow:0 4px 0 #1d4e9e}
+#bids button.nil{width:auto;padding:8px 14px;background:linear-gradient(135deg,#ffbe0b,#fb5607)}
+</style></head><body>
+<header><h1>♠ SPADES PARTY ♥</h1><button onclick="newGame()">New Game</button></header>
+<div id="wrap"><div id="table">
+<div class="seat" id="sN" style="--c:#ff006e"></div><div class="seat" id="sW" style="--c:#3a86ff"></div><div class="seat" id="sE" style="--c:#8338ec"></div><div class="seat" id="sS" style="--c:#ff006e"></div>
+<div id="trick"></div><div id="msg"></div><div id="hand"></div></div>
+<div id="panel"><div class="team us">You + North<b id="scUs">0</b><span id="bgUs"></span></div><div class="team them">East + West<b id="scThem">0</b><span id="bgThem"></span></div>
+<table id="info"></table><p style="font-size:.8em;opacity:.85">Game to 500. Bags: 10 = −100. Nil ±100. Spades can't be led until broken.</p></div></div>
+<div id="overlay"><div id="box"></div></div>
+<script id="logic">
+// ===== Pure game logic (also used by node tests) =====
+const SUITS=['c','d','h','s'],RANKS=[2,3,4,5,6,7,8,9,10,11,12,13,14];
+function deck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({s,r});return d}
+function shuffle(a,rnd=Math.random){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function sortHand(h){const o={s:0,h:1,c:2,d:3};return h.sort((a,b)=>o[a.s]-o[b.s]||b.r-a.r)}
+function legalPlays(hand,trick,broken){
+  if(trick.length){const led=trick[0].card.s,f=hand.filter(c=>c.s===led);return f.length?f:hand.slice()}
+  if(broken)return hand.slice();const n=hand.filter(c=>c.s!=='s');return n.length?n:hand.slice()}
+function trickWinner(trick){let w=trick[0];for(const t of trick){const c=t.card,b=w.card;
+  if(c.s===b.s?c.r>b.r:c.s==='s')w=t}return w.p}
+function aiBid(hand,partnerBid){let t=0;const sp=hand.filter(c=>c.s==='s');
+  for(const c of hand){if(c.s!=='s'){const n=hand.filter(x=>x.s===c.s).length;if(c.r===14)t+=n<=6?1:.5;else if(c.r===13&&n>=2&&n<=4)t+=.75;else if(c.r===12&&n>=3&&n<=4)t+=.25}}
+  for(const c of sp){if(c.r>=12)t+=1;else if(c.r>=10)t+=.6}
+  if(sp.length>3)t+=(sp.length-3)*.8;
+  for(const s of['c','d','h']){const n=hand.filter(c=>c.s===s).length;if(n===0&&sp.length>=2)t+=1;else if(n===1&&sp.length>=3)t+=.5}
+  const hi=hand.filter(c=>c.r>=12).length;
+  if(t<1.2&&hi===0&&sp.length<=3&&!sp.some(c=>c.r>=10)&&partnerBid!==0)return 0;
+  return Math.max(1,Math.min(13,Math.round(t)))}
+function aiPlay(st,p){const hand=st.hands[p],tr=st.trick,leg=legalPlays(hand,tr,st.broken);
+  const asc=leg.slice().sort((a,b)=>(a.s==='s')-(b.s==='s')||a.r-b.r),low=asc[0],high=asc[asc.length-1];
+  const nil=st.bids[p]===0,partner=(p+2)%4,pNil=st.bids[partner]===0;
+  const beats=(c)=>{const t=tr.concat([{p,card:c}]);return trickWinner(t)===p};
+  if(!tr.length){if(nil)return low;const ns=leg.filter(c=>c.s!=='s');const aces=ns.filter(c=>c.r===14);if(aces.length&&!pNil)return aces[0];return low}
+  const curW=trickWinner(tr);
+  if(nil){const losers=leg.filter(c=>!beats(c));if(losers.length)return losers.sort((a,b)=>b.r-a.r)[0];return low}
+  if(curW===partner&&!pNil&&tr.length>=2){const ws=leg.filter(c=>!beats(c));return(ws.length?ws:leg).sort((a,b)=>a.r-b.r)[0]}
+  const winners=leg.filter(beats).sort((a,b)=>(a.s==='s')-(b.s==='s')||a.r-b.r);
+  if(winners.length){return tr.length===3?winners[0]:winners[winners.length-1].s===winners[0].s?winners[winners.length-1]:winners[0]}
+  return low}
+function newRoundState(scores,bags,dealer,rnd){const d=shuffle(deck(),rnd),hands=[[],[],[],[]];d.forEach((c,i)=>hands[i%4].push(c));hands.forEach(sortHand);
+  return{hands,bids:[null,null,null,null],tricks:[0,0,0,0],trick:[],broken:false,leader:(dealer+1)%4,turn:(dealer+1)%4,dealer,scores,bags,played:0}}
+function playCard(st,p,card){if(st.turn!==p)throw'not turn';const leg=legalPlays(st.hands[p],st.trick,st.broken);
+  if(!leg.some(c=>c.s===card.s&&c.r===card.r))throw'illegal play '+JSON.stringify(card);
+  st.hands[p]=st.hands[p].filter(c=>!(c.s===card.s&&c.r===card.r));st.trick.push({p,card});if(card.s==='s')st.broken=true;
+  if(st.trick.length===4){const w=trickWinner(st.trick);st.tricks[w]++;st.lastTrick=st.trick;st.trick=[];st.turn=w;st.played++;return w}
+  st.turn=(p+1)%4;return null}
+function scoreRound(st){const res=[];for(let t=0;t<2;t++){const a=t,b=t+2;let pts=0,bagsAdd=0,notes=[];let bid=0,tk=0;
+  for(const p of[a,b]){if(st.bids[p]===0){if(st.tricks[p]===0){pts+=100;notes.push('Nil made +100')}else{pts-=100;notes.push('Nil failed −100')}}else{bid+=st.bids[p]}}
+  for(const p of[a,b])tk+=st.tricks[p];// all tricks count toward contract (nil bidder's tricks count as bags)
+  if(bid>0){if(tk>=bid){pts+=10*bid;bagsAdd=tk-bid;pts+=bagsAdd}else{pts-=10*bid;notes.push('Set!')}}else{bagsAdd=tk;pts+=tk}
+  let bg=st.bags[t]+bagsAdd;if(bg>=10){bg-=10;pts-=100;notes.push('10 bags −100')}
+  st.bags[t]=bg;st.scores[t]+=pts;res.push({bid,tk,pts,bagsAdd,notes})}return res}
+function gameOver(scores){const[a,b]=scores;if((a>=500||b>=500||a<=-200||b<=-200)&&a!==b)return a>b?0:1;return -1}
+if(typeof module!=='undefined')module.exports={deck,shuffle,legalPlays,trickWinner,aiBid,aiPlay,newRoundState,playCard,scoreRound,gameOver};
+</script>
+<script>
+const NAMES=['You','West','North','East'],SEATID=['sS','sW','sN','sE'],SYM={s:'♠',h:'♥',d:'♦',c:'♣'},RN={11:'J',12:'Q',13:'K',14:'A'};
+let G,dealer=3,busy=false;const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
+function cardEl(c){const e=document.createElement('div');e.className='card '+c.s+(c.s==='h'?' red':'');e.innerHTML=(RN[c.r]||c.r)+'<br>'+SYM[c.s]+'<span class="big">'+SYM[c.s]+'</span>';return e}
+function render(){if(!G)return;for(let p=0;p<4;p++){const e=$(SEATID[p]),b=G.bids[p];e.className='seat'+(G.turn===p?' turn':'');
+  e.innerHTML='<span class="tag">'+NAMES[p]+' · bid '+(b===null?'?':b===0?'NIL':b)+' · won '+G.tricks[p]+'</span>'+(p?'<div class="backs">'+'<i></i>'.repeat(G.hands[p].length)+'</div>':'')}
+  const h=$('hand');h.innerHTML='';const myTurn=G.turn===0&&G.bids.every(x=>x!==null)&&!busy,leg=myTurn?legalPlays(G.hands[0],G.trick,G.broken):[];
+  h.className=myTurn?'':'idle';
+  G.hands[0].forEach(c=>{const e=cardEl(c);if(leg.includes(c)){e.classList.add('legal');e.onclick=()=>human(c)}h.appendChild(e)});
+  const t=$('trick');t.innerHTML='';const pos=[[70,100],[0,52],[70,0],[140,52]];
+  (G.trick.length?G.trick:(G.showLast||[])).forEach(x=>{const e=cardEl(x.card);e.style.left=pos[x.p][0]+'px';e.style.top=pos[x.p][1]+'px';t.appendChild(e)});
+  $('scUs').textContent=G.scores[0];$('scThem').textContent=G.scores[1];$('bgUs').textContent='Bags: '+G.bags[0];$('bgThem').textContent='Bags: '+G.bags[1];
+  const tb=(t)=>{const a=G.bids[t],b=G.bids[t+2];return(a??'?')+'+'+(b??'?')};
+  $('info').innerHTML='<tr><td></td><td>Bid</td><td>Won</td></tr><tr><td>Us</td><td>'+tb(0)+'</td><td>'+(G.tricks[0]+G.tricks[2])+'</td></tr><tr><td>Them</td><td>'+tb(1)+'</td><td>'+(G.tricks[1]+G.tricks[3])+'</td></tr><tr><td colspan=3>Spades '+(G.broken?'broken 💥':'not broken')+'</td></tr>'}
+function msg(s){$('msg').textContent=s}
+function overlay(html){$('box').innerHTML=html;$('overlay').style.display=html?'flex':'none'}
+function newGame(){overlay('');dealer=3;startRound([0,0],[0,0])}
+async function startRound(sc,bg){dealer=(dealer+1)%4;G=newRoundState(sc,bg,dealer);busy=true;render();msg('Bidding…');
+  for(let i=0;i<4;i++){const p=(dealer+1+i)%4;G.turn=p;render();
+    if(p===0){busy=false;render();G.bids[0]=await askBid();busy=true}else{await wait(500);G.bids[p]=aiBid(G.hands[p],G.bids[(p+2)%4])}msg(NAMES[p]+' bids '+(G.bids[p]===0?'NIL!':G.bids[p]));render()}
+  G.turn=G.leader;busy=false;loop()}
+function askBid(){return new Promise(res=>{let h='<h2>Your bid</h2><p>Partner North bid: '+(G.bids[2]??'not yet')+'</p><div id="bids"><button class="nil" data-b="0">NIL</button>';for(let i=1;i<=13;i++)h+='<button data-b="'+i+'">'+i+'</button>';
+  overlay(h+'</div>');$('box').querySelectorAll('button').forEach(b=>b.onclick=()=>{overlay('');res(+b.dataset.b)})})}
+async function loop(){while(G.played<13&&G.turn!==0){busy=true;render();await wait(650);const p=G.turn;const w=playCard(G,p,aiPlay(G,p));await after(w)}
+  busy=false;render();if(G.played<13)msg('Your turn — pick a glowing card!');else endRound()}
+async function after(w){render();if(w!==null){G.showLast=G.lastTrick;render();msg(NAMES[w]+' '+(w?'wins':'win')+' the trick! 🎉');await wait(1000);G.showLast=null}}
+async function human(c){if(busy)return;busy=true;const w=playCard(G,0,c);await after(w);busy=false;if(G.played<13)loop();else endRound()}
+function endRound(){render();const r=scoreRound(G),go=gameOver(G.scores);render();
+  const row=(n,x)=>'<p><b>'+n+'</b>: bid '+x.bid+', took '+x.tk+' → <b>'+(x.pts>0?'+':'')+x.pts+'</b> '+x.notes.join(', ')+'</p>';
+  overlay('<h2>'+(go<0?'Round Summary':go===0?'🏆 You Win! 🏆':'😿 They Win')+'</h2>'+row('You + North',r[0])+row('East + West',r[1])+'<h3>'+G.scores[0]+' – '+G.scores[1]+'</h3>'+(go<0?'<button id="nx">Next Round</button>':'<button onclick="newGame()">New Game</button>'));
+  if(go<0)$('nx').onclick=()=>{overlay('');startRound(G.scores,G.bags)}}
+newGame();
+</script></body></html>
