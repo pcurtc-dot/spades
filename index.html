@@ -121,14 +121,19 @@ function endRound(){render();const r=scoreRound(G),go=gameOver(G.scores);render(
 let AC=null,master=null,muted=false,musicTimer=null;
 function initAudio(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.5;master.connect(AC.destination);if(AC.state==='running')startMusic()}catch(e){}}
 function tone(f,t,d,v,type){const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)}
-// Bach, Minuet in G (BWV Anh. 114) - note,beats
-const NF=n=>{const m={C:0,D:2,E:4,F:5,G:7,A:9,B:11},sh=n[1]==='#'?1:0;return 440*Math.pow(2,(m[n[0]]+sh+12*(+n.slice(1+sh)+1)-69)/12)};
-const A1='D5 1,G4 .5,A4 .5,B4 .5,C5 .5,D5 1,G4 1,G4 1,E5 1,C5 .5,D5 .5,E5 .5,F#5 .5,G5 1,G4 1,G4 1,C5 1,D5 .5,C5 .5,B4 .5,A4 .5,B4 1,C5 .5,B4 .5,A4 .5,G4 .5,F#4 1,G4 .5,A4 .5,B4 .5,G4 .5,A4 3,';
-const A2='D5 1,G4 .5,A4 .5,B4 .5,C5 .5,D5 1,G4 1,G4 1,E5 1,C5 .5,D5 .5,E5 .5,F#5 .5,G5 1,G4 1,G4 1,C5 1,D5 .5,C5 .5,B4 .5,A4 .5,B4 1,C5 .5,B4 .5,A4 .5,G4 .5,A4 1,B4 .5,A4 .5,G4 .5,F#4 .5,G4 3';
-const MEL=(A1+A2).split(',').map(x=>x.split(' ')),BASS='G3 B3 C4 B3 A3 G3 D3 D3 G3 B3 C4 B3 A3 G3 D3 G2'.split(' ');
-function startMusic(){if(musicTimer)return;const Q=.42,len=48*Q;const play=()=>{let t=AC.currentTime+.1;const t0=t;
-  for(const[n,b]of MEL){tone(NF(n),t,b*Q*.95,.06,'square');t+=b*Q}
-  BASS.forEach((n,i)=>{tone(NF(n),t0+i*3*Q,Q*.9,.12,'triangle');tone(NF(n)*1.5,t0+(i*3+1)*Q,Q*.8,.06,'triangle');tone(NF(n)*2,t0+(i*3+2)*Q,Q*.8,.06,'triangle')})};
+// Original ragtime tune ("Spade Street Rag") - stride left hand + syncopated melody, honky-tonk piano timbre
+const NF=n=>{const m={C:0,D:2,E:4,F:5,G:7,A:9,B:11},sh=n[1]==='#'?1:n[1]==='b'?-1:0,k=sh?2:1;return 440*Math.pow(2,(m[n[0]]+sh+12*(+n.slice(k)+1)-69)/12)};
+function piano(f,t,d,v){[-9,9].forEach(c=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;o.detune.value=c;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(v*.35,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)})}
+// each bar = 8 sixteenths; [root, chord] and melody as note:sixteenths
+const HARM=[['C2','E3 G3 C4'],['C2','E3 G3 C4'],['G1','F3 G3 B3'],['G1','F3 G3 B3'],['D2','F3 A3 C4'],['G1','F3 G3 B3'],['C2','E3 G3 C4'],['G1','F3 G3 B3'],
+ ['C2','E3 G3 Bb3'],['C2','E3 G3 Bb3'],['F1','F3 A3 C4'],['F1','F3 Ab3 C4'],['G2','E3 G3 C4'],['G1','F3 G3 B3'],['C2','E3 G3 C4'],['C2','E3 G3 C4']];
+const RMEL=['E5:1 G5:2 E5:1 C5:2 D5:1 E5:1','G5:3 A5:3 G5:2','F5:1 D5:2 B4:1 G4:2 A4:1 B4:1','D5:3 C5:3 B4:2','A4:1 C5:2 F5:1 E5:2 D5:1 C5:1','B4:2 D5:2 G5:4','E5:1 G5:2 C6:1 B5:2 G5:1 E5:1','D5:2 E5:1 D5:1 B4:4',
+ 'E5:1 G5:2 E5:1 Bb5:2 G5:1 E5:1','G5:3 E5:3 C5:2','A5:1 F5:2 C5:1 A4:2 C5:1 F5:1','Ab5:3 F5:3 C5:2','G5:1 E5:2 C5:1 G4:2 A4:1 C5:1','D5:3 F5:3 B4:2','C5:1 E5:2 G5:1 C6:3 R:1','R:2 G4:1 A4:1 B4:1 C5:1 D5:1 D#5:1'];
+function startMusic(){if(musicTimer)return;const S=.13,bar=8*S,len=HARM.length*bar;const play=()=>{const t0=AC.currentTime+.1;
+  HARM.forEach(([r,ch],i)=>{const b=t0+i*bar;[0,4].forEach(o=>piano(NF(r)*(o?1.5:1),b+o*S,1.6*S,.11));
+    [2,6].forEach(o=>ch.split(' ').forEach(n=>piano(NF(n),b+o*S,1.4*S,.045)));
+    let t=b;RMEL[i].split(' ').forEach(x=>{const[n,d]=x.split(':');if(n!=='R')piano(NF(n),t,d*S*1.1+.05,.08);t+=d*S})});};
   play();musicTimer=setInterval(play,len*1000)}
 function cheer(){if(!AC)return;const t=AC.currentTime;[523.3,659.3,784,1046.5].forEach((f,i)=>tone(f,t+i*.08,.35,.15,'triangle'))}
 function toggleMute(){muted=!muted;initAudio();AC.resume().then(startMusic);if(master)master.gain.value=muted?0:.5;$('mute').textContent=muted?'🔇 Muted':'🔊 Music'}
